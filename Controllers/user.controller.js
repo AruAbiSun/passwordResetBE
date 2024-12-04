@@ -74,6 +74,23 @@ export const registerUser = async (req, res) => {
 
     await newUser.save();
 
+    const resetUrl = `https://zippy-stardust-9c7ccb.netlify.app/login`;
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: newUser.email,
+      subject: "Welcome to Our Platform",
+      html: `<p>Hi ${userName},</p>
+             <p>Welcome to our platform! You can log in using the link below:</p>
+             <p><a href="${resetUrl}">Click here to log in</a></p>
+             <p>Thank you for joining us!</p>`,
+    };
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("Welcome email sent successfully.");
+    } catch (emailError) {
+      console.error("Error sending welcome email:", emailError);
+    }
+
     res.status(200).json({ message: "Register Successful", data: newUser });
   } catch (error) {
     console.log(error);
